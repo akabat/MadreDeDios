@@ -1,27 +1,21 @@
-package carbon.execrice.pratique;
+package game;
 
 import java.util.Objects;
 
-public class Position {
+public class Coordinates implements Comparable<Coordinates> {
     
-    private final int latitude;
     private final int longitude;
+    private final int latitude;
 
-    public Position(int longitute, int latitude) {
+    public Coordinates(int longitute, int latitude) {
         this.latitude = latitude;
         this.longitude = longitute;
     }
 
-    /**
-     * @return the latitude
-     */
     public int getLatitude() {
         return latitude;
     }
 
-    /**
-     * @return the longitude
-     */
     public int getLongitude() {
         return longitude;
     }
@@ -36,16 +30,22 @@ public class Position {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Position)) {
+        if (!(obj instanceof Coordinates)) {
             return false;
         }
-        Position other = (Position) obj;
+        Coordinates other = (Coordinates) obj;
         return latitude == other.latitude && longitude == other.longitude;
     }
 
     @Override
     public String toString() {
         return "Position [latitude=" + latitude + ", longitude=" + longitude + "]";
+    }
+
+    @Override
+    public int compareTo(Coordinates o) {
+        int cmpLong = Integer.valueOf(longitude).compareTo(o.getLongitude());
+        return cmpLong != 0? cmpLong : Integer.valueOf(latitude).compareTo(o.getLatitude());
     }
 
 }

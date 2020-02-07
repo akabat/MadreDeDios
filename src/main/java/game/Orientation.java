@@ -1,4 +1,4 @@
-package carbon.execrice.pratique;
+package game;
 
 public enum Orientation {
     N,E,S,O;

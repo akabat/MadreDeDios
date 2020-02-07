@@ -1,4 +1,4 @@
-package carbon.execrice.pratique;
+package game;
 
 import java.util.regex.Pattern;
 
