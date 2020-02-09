@@ -1,4 +1,4 @@
-package game;
+package game.map;
 
 public class Plain extends Field {
     
@@ -14,7 +14,7 @@ public class Plain extends Field {
         Resource resource = null;
         if( getGemsNb() > 0 ) {
             setGemsNb( getGemsNb() -1 );
-            resource = new Resource();
+            resource = Resource.Tresor;
             getPlayer().enjoy(resource);
             return true;
         }

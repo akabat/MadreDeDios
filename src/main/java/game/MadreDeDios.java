@@ -4,24 +4,44 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import game.map.TravelerMap;
+import game.player.MoveType;
+import game.player.PeacefulTourist;
+import game.player.Player;
+import game.position.Coordinates;
+import game.position.Orientation;
+
 /**
+ * La classe principale du jeu <b>"La carte au trésor"</b>.
+ * Le jeu est composé du terrain de jeu (<code>playground</code> de classe {@link TravelerMap}) et de l'ensemble de joueurs (<code>players</code> de classe {@link Player}).
+ * Les méthodes de cette classe permettent : 
+ * <ul>
+ *      <li>l'initialisation du jeu (lecture du scénario à partir d'un fichier) : {@link MadreDeDios#init(String)}</li>
+ *      <li>l'execution du scénario : {@link MadreDeDios#play()},</li>
+ *      <li>la sauvegarde du scénario dans le fichier de sortie : {@link MadreDeDios#persistResult(String)}.</li>
+ * </ul> 
  * 
+ * @author Andrzej Kabat 
  */
 public class MadreDeDios {
-    private TravelerMap playground = null;
-    private Set<Player> players = null;
     
+    private TravelerMap playground = null;
+    
+    private List<Player> players = null;
+
     /**
-     *  
+     * La méthode main.
+     * 
+     *  @param args 
+     *          doit contenir deux itéms : le chemin d'accès des fichiers d'entrée et de sortie.
      */
     public static void main( String[] args ) {
         if(args.length < 2) {
@@ -29,17 +49,23 @@ public class MadreDeDios {
                 + "\t1) le fichier d'entrée contenant le scénario,\n"
                 + "\t2) le fichier de sortie.");
         }
-        
+
         MadreDeDios game = new MadreDeDios();
         game.init(args[0]);
         game.play();
-        game.finalize(args[1]);
-    }
-    
-    public MadreDeDios() {
-        this.players = new HashSet<>();
+        game.persistResult(args[1]);
     }
 
+    public MadreDeDios() {
+        this.players = new ArrayList<>();
+    }
+
+    /**
+     * Initialisation du jeu à partir d'un fichier contenant le scénario à jouer.
+     * 
+     *  @param inputFile
+     *          le chemin d'accès au fichier d'entrée
+     */
     public void init(String inputFile) {
         try(BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
             String inputLine = reader.readLine();
@@ -48,19 +74,22 @@ public class MadreDeDios {
                 inputLine = reader.readLine();
             } 
         } catch (FileNotFoundException e) {
-            System.out.println("Fichier d'entré inexistant");
+            System.err.println("Fichier d'entré inexistant");
             System.exit(1);
         } catch (IOException e) {
-            System.out.println("Fichier d'entré inaccessible");
+            System.err.println("Fichier d'entré inaccessible");
             System.exit(1);
         }
     }
-    
-    public void finalize(String outputFile) {
-        
-        playground.writeToFile(outputFile);
-    }
 
+    /**
+     * L'initialisation est effectuée étape par étape, à chaque ligne du fichier d'entrée.
+     * Chaque ligne est analysée afin d'identifier la commande d'initialisation correspondante.
+     * L'ensemble de commandes d'initialisation peuvent être trouvées dans l'enum {@link SetupCommand}.
+     * 
+     *  @param inputLine 
+     *          ligne du fichier d'entrée
+     */
     public void initStep(String inputLine) {
         Pattern ptrn = null;
         Matcher mtchr = null;
@@ -106,8 +135,10 @@ public class MadreDeDios {
             Coordinates poz = new Coordinates( Integer.parseInt(mtchr.group("longitude")), Integer.parseInt(mtchr.group("latitude")) );
             List<MoveType> movements = Arrays.stream( mtchr.group("movements").split("") ).map( MoveType::valueOf ).collect( Collectors.toList() );
             Player player = new PeacefulTourist( mtchr.group("name"), poz, Orientation.valueOf(mtchr.group("orientation")),  movements);
-            this.playground.setupPlayer(poz, player);
-            players.add(player);
+            if(!players.contains(player)) {
+                this.playground.setupPlayer(poz, player);
+                players.add(player);
+            }
             return;
         case LIGNE_VIDE: 
         default:
@@ -115,17 +146,36 @@ public class MadreDeDios {
         }
     }
 
+    /**
+     * La méthode exécute le scénario. Les joueurs se déplacent en ordre suivant lequel il figurent dans le fichier d'entrée. 
+     */
     public void play() {
 
         boolean anyPlayerStillCanMove;
         do {
             anyPlayerStillCanMove = false;
-            for(Player t : players) {
-                anyPlayerStillCanMove = anyPlayerStillCanMove || t.move();
+            for(Player player : players) {
+                anyPlayerStillCanMove = player.move() || anyPlayerStillCanMove;
             }
+            playground.removeEmptyFields();
+            
         } while(anyPlayerStillCanMove);
     }
-    
+
+    /**
+     * La méthode qui permet de sauvegarder le résultat d'exécution du scénario.
+     * 
+     *  @param outputFile
+     *          le chemin d'accès au fichier de sortie
+     */
+    public void persistResult(String outputFile) {
+
+        playground.writeToFile(outputFile);
+    }
+
+    /**
+     * Méthode utilisée pour tester.
+     */
     public TravelerMap getTravelerMap() {
         return playground;
     } 

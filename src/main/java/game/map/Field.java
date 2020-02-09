@@ -1,4 +1,6 @@
-package game;
+package game.map;
+
+import game.player.Player;
 
 public abstract class Field {
     

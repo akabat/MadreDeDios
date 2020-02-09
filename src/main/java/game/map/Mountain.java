@@ -1,4 +1,4 @@
-package game;
+package game.map;
 
 public class Mountain extends Field {
 
@@ -7,7 +7,7 @@ public class Mountain extends Field {
         
         if(!getPlayer().hasSpecialTools()) return false;
         else {
-            // TODO : consider an extraction with a special tools for another type of brave player, capable to go to the mountains
+            // TODO : consider an extraction with a special tools for another type of brave player, capable to climb the mountains
         }
         return false;
     }

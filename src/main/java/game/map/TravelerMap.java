@@ -1,13 +1,18 @@
-package game;
+package game.map;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import game.player.Player;
+import game.position.Coordinates;
 
 public class TravelerMap {
     private final int surfaceMax = 85182;
@@ -79,42 +84,47 @@ public class TravelerMap {
         return f;
     }
     
-    public void removeEmptyFields() {
-        fieldsMap = fieldsMap.entrySet().stream().filter(e -> e.getValue().hasSpecialProperties()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-    
     public void writeToFile(String filePath) {
         
         removeEmptyFields();
         
-        try( BufferedWriter bWriter = new BufferedWriter(new FileWriter(filePath, false)) ) {
+        try( BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath, false), StandardCharsets.UTF_8)) ) {
             
+            bWriter.write( String.format("# {C comme Carte} - {Nb. de case en largeur} - {Nb. de case en hauteur}%n") );
             bWriter.write( String.format( "C - %1$d - %2$d%n", this.width, this.height) );
             
             List<Map.Entry<Coordinates, Field>> mountains = fieldsMap.entrySet().stream()
                 .filter(e -> e.getValue() instanceof Mountain )
                 .sorted((e1,e2) -> e1.getKey().compareTo(e2.getKey()))
                 .collect(Collectors.toList());
-            for(Map.Entry<Coordinates, Field> e : mountains) {
-                bWriter.write( String.format("M - %1$d - %2$d%n", e.getKey().getLongitude(), e.getKey().getLatitude()) );
+            if(!mountains.isEmpty()) {
+                bWriter.write( String.format("# {M comme Montagne} - {Axe horizontal} - {Axe vertical}%n") );
+                for(Map.Entry<Coordinates, Field> e : mountains) {
+                    bWriter.write( String.format("M - %1$d - %2$d%n", e.getKey().getLongitude(), e.getKey().getLatitude()) );
+                }
             }
             
-            bWriter.write( String.format("# {T comme Trésor} - {Axe horizontal} - {Axe vertical} - {Nb. de trésors restants}%n") );
             List<Map.Entry<Coordinates, Field>> gemFields = fieldsMap.entrySet().stream()
                 .filter(e -> e.getValue() instanceof Plain && ((Plain) e.getValue()).getGemsNb()>0 )
                 .sorted((e1,e2) -> e1.getKey().compareTo(e2.getKey()))
                 .collect(Collectors.toList());
-            for(Map.Entry<Coordinates, Field> e : gemFields) {
-                bWriter.write( String.format("T - %1$d - %2$d - %3$d%n", e.getKey().getLongitude(), e.getKey().getLatitude(), ((Plain) e.getValue()).getGemsNb()) );
+            if(!gemFields.isEmpty()) {
+                bWriter.write( String.format("# {T comme Trésor} - {Axe horizontal} - {Axe vertical} - {Nb. de trésors restants}%n") );
+                for(Map.Entry<Coordinates, Field> e : gemFields) {
+                    bWriter.write( String.format("T - %1$d - %2$d - %3$d%n", e.getKey().getLongitude(), e.getKey().getLatitude(), ((Plain) e.getValue()).getGemsNb()) );
+                }
             }
             
-            bWriter.write( String.format("# {A comme Aventurier} - {Nom de l’aventurier} - {Axe horizontal} - {Axe vertical} - {Orientation} - {Nb. trésors ramassés}%n") );
+            
             List<Map.Entry<Coordinates, Field>> travelers = fieldsMap.entrySet().stream()
                 .filter(e -> e.getValue().getPlayer() != null )
                 .sorted((e1,e2) -> e1.getKey().compareTo(e2.getKey()))
                 .collect(Collectors.toList());
-            for(Map.Entry<Coordinates, Field> e : travelers) {
-                bWriter.write( ((Plain) e.getValue()).getPlayer().toString() );
+            if(!travelers.isEmpty()) {
+                bWriter.write( String.format("# {A comme Aventurier} - {Nom de l’aventurier} - {Axe horizontal} - {Axe vertical} - {Orientation} - {Nb. trésors ramassés}%n") );
+                for(Map.Entry<Coordinates, Field> e : travelers) {
+                    bWriter.write( ((Plain) e.getValue()).getPlayer().toString() );
+                }
             }
             
         } catch (IOException e) {
@@ -150,5 +160,9 @@ public class TravelerMap {
             .forEach( e -> sBuilder.append(e.getValue().getPlayer().toString()) );
         
         return sBuilder.toString();
+    }
+    
+    public void removeEmptyFields() {
+        fieldsMap = fieldsMap.entrySet().stream().filter(e -> e.getValue().hasSpecialProperties()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

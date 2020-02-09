@@ -1,8 +1,15 @@
-package game;
+package game.player;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
+import game.map.Field;
+import game.map.Resource;
+import game.map.TravelerMap;
+import game.position.Coordinates;
+import game.position.Orientation;
 
 public abstract class Player implements Comparable<Player> {
     
@@ -141,5 +148,24 @@ public abstract class Player implements Comparable<Player> {
         int compNbGemsFound = Integer.valueOf(nbGemsFound).compareTo(otherPlayer.getNbGemsFound());
         return compNbGemsFound;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, orientation, position);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Player)) {
+            return false;
+        }
+        Player other = (Player) obj;
+        return Objects.equals(name, other.name) && orientation == other.orientation && Objects.equals(position, other.position);
+    }
+    
+    
 
 }

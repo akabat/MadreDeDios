@@ -1,6 +1,11 @@
-package game;
+package game.player;
 
 import java.util.List;
+
+import game.map.Field;
+import game.map.Plain;
+import game.position.Coordinates;
+import game.position.Orientation;
 
 public class PeacefulTourist extends Player {
     
