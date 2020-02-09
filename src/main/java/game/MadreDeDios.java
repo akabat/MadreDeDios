@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,16 +45,24 @@ public class MadreDeDios {
      *          doit contenir deux itéms : le chemin d'accès des fichiers d'entrée et de sortie.
      */
     public static void main( String[] args ) {
+        String inputFile;
+        String outputFile;
         if(args.length < 2) {
-            throw new InputMismatchException("Le jeu Madre de Dios prend deux arguments :\n"
-                + "\t1) le fichier d'entrée contenant le scénario,\n"
-                + "\t2) le fichier de sortie.");
+            Scanner scanner = new Scanner(System.in);
+            System.out.format("%n%s", "Veuillez specifier le fichier de scenario a jouer : ");
+            inputFile = scanner.next();
+            System.out.format("%n%s", "le fichier de sortie : ");
+            outputFile = scanner.next();
+            scanner.close();
+        } else {
+            inputFile = args[0];
+            outputFile = args[1];    
         }
 
         MadreDeDios game = new MadreDeDios();
-        game.init(args[0]);
+        game.init(inputFile);
         game.play();
-        game.persistResult(args[1]);
+        game.persistResult(outputFile);
     }
 
     public MadreDeDios() {
@@ -174,7 +183,7 @@ public class MadreDeDios {
     }
 
     /**
-     * Méthode utilisée pour tester.
+     * Méthode auxilaire, utilisée pour tester.
      */
     public TravelerMap getTravelerMap() {
         return playground;

@@ -2,6 +2,12 @@ package game;
 
 import java.util.regex.Pattern;
 
+/**
+ * L'enum regroupe tous les types de commandes possibles du fichier d'entrée.  
+ * Chaque élément est associé au <code>Pattern</code> regex permettant de l'identifier.
+ *  
+ * @author Andrzej Kabat
+ */
 public enum SetupCommand {
     COMMENTAIRE("^#.*"),
     CARTE("^C - (?<longitude>\\d+) - (?<latitude>\\d+)\\s*$"),

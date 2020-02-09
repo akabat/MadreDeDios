@@ -2,6 +2,13 @@ package game.position;
 
 import java.util.Objects;
 
+/**
+ * Permet d'identifier la position des éléments sur la carte de jeux.
+ * <code>longitude</code> - coordonnée en direction horizontale,
+ * <code>latitude</code> - coordonnée en verticale.
+ * 
+ * @author Andrzej Kabat
+ */
 public class Coordinates implements Comparable<Coordinates> {
     
     private final int longitude;

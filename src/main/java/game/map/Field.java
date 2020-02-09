@@ -2,6 +2,12 @@ package game.map;
 
 import game.player.Player;
 
+/**
+ * La classe abstraite représentant le champs sur la carte de jeu.
+ * Elle est dérivée par {@link Mountain}, et {@link Plain}.
+ * 
+ * @author Andrzej Kabat
+ */
 public abstract class Field {
     
     public abstract boolean provideResource();

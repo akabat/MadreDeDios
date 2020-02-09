@@ -11,6 +11,12 @@ import game.map.TravelerMap;
 import game.position.Coordinates;
 import game.position.Orientation;
 
+/**
+ * Classe abstraite, représentant l'avanturier. 
+ * Elle est dérivée par {@link PeacefulTourist}.
+ * 
+ * @author Andrzej Kabat
+ */
 public abstract class Player implements Comparable<Player> {
     
     protected abstract Coordinates getNewPosition();

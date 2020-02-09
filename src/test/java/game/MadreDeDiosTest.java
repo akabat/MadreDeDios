@@ -1,56 +1,23 @@
 package game;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
+ * La classe propose quelque scénarii de test permettant de valider le bon fonctionnement du jeu "La carte au trésor".
  * 
+ * @author Andrzej Kabat
  */
 public class MadreDeDiosTest {
 
     /**
-     */
-    @Test
-    @Disabled
-    public void givenTestScenarioInString_afterGameExecution_expectedStringEqualsResultingString() {
-        
-        Deque<String> testScenario = new LinkedList<>();
-        testScenario.addAll(Arrays.asList( new String[] {"C - 3 - 4", "M - 1 - 0", "M - 2 - 1", "T - 0 - 3 - 2", "T - 1 - 3 - 3", "A - Lara - 1 - 1 - S - AADADAGGA"} ));
-        
-        StringBuilder referenceStringBuilder = new StringBuilder();
-        referenceStringBuilder.append(String.format("C - 3 - 4%n"));
-        referenceStringBuilder.append(String.format("M - 1 - 0%n"));
-        referenceStringBuilder.append(String.format("M - 2 - 1%n"));
-        referenceStringBuilder.append(String.format("# {T comme Trésor} - {Axe horizontal} - {Axe vertical} - {Nb. de trésors restants}%n"));
-        referenceStringBuilder.append(String.format("T - 1 - 3 - 2%n"));
-        referenceStringBuilder.append(String.format("# {A comme Aventurier} - {Nom de l’aventurier} - {Axe horizontal} - {Axe vertical} - {Orientation} - {Nb. trésors ramassés}%n"));
-        referenceStringBuilder.append(String.format("A - Lara - 0 - 3 - S - 3%n"));
-        String referenceString = referenceStringBuilder.toString();
-        
-        MadreDeDios game = new MadreDeDios();
-        while(!testScenario.isEmpty()) {
-            game.initStep(testScenario.removeFirst());
-        }
-        game.play();
-
-        String resultingString = game.getTravelerMap().toString();
-
-        assertEquals(referenceString, resultingString);
-    }
-    
-    /**
-     * Test scénario 1 : celui présenté dans la description d'objectif de l'exercice.
+     * Test scénario 1 : celui, présenté dans la description d'objectif de l'exercice.
      */
     @Test
     public void givenTestScenario1FromInputFile_afterGameExecution_expectedReferenceOutputFileEqualsResultingOutputFile() {
@@ -83,7 +50,7 @@ public class MadreDeDiosTest {
      *  <li>les avanturiers bougent en ordre selon lequel ils ont été ajoutés,</li>
      *  <li>un champs occupé par un avanturier est innaccessible à un autre,</li>
      *  <li>à la sortie, les éléments de la carte sont groupés (Montagnes / Trésors / Avanturier), ensuite arrangés en ordre selon leurs positions.</li>
-     * </ol>  
+     * </ol>
      */
     @Test
     public void givenTestScenario3FromInputFile_afterGameExecution_expectedReferenceOutputFileEqualsResultingOutputFile() {
@@ -97,12 +64,13 @@ public class MadreDeDiosTest {
     }
     
     /**
-     * La méthode compare deux fichiers texte : file1 et file2. Si leurs contenu (comparé ligne par ligne) est identique, la méthode returne "true", sinon, "false". 
+     * La méthode permet de comparer deux fichiers texte encodés en UTF-8. 
+     * Si leurs contenu (comparé ligne par ligne) est identique, la méthode returne <code>true</code>, sinon <code>false</code>. 
      */
-    private boolean compareFiles(String file1, String file2) {
+    private boolean compareFiles(String referenceFile, String examinedFile) {
         
-        try(BufferedReader reader1 = new BufferedReader(new FileReader(file1)); 
-            BufferedReader reader2 = new BufferedReader(new FileReader(file2)) ) {
+        try(BufferedReader reader1 = new BufferedReader(new FileReader(referenceFile)); 
+            BufferedReader reader2 = new BufferedReader(new FileReader(examinedFile)) ) {
             
             String str1 = reader1.readLine();
             String str2 = reader2.readLine();
@@ -121,10 +89,10 @@ public class MadreDeDiosTest {
             }
             
         } catch (FileNotFoundException e) {
-            System.err.format("Au moins un des fichiers d'entré n'existe pas : %1$s, %2$s%n", file1, file2);
+            System.err.format("Au moins un des fichiers d'entré n'existe pas : %1$s, %2$s%n", referenceFile, examinedFile);
             return false;
         } catch (IOException e) {
-            System.err.format("Au moins un des fichiers d'entré est inaccessible : %1$s, %2$s%n", file1, file2);
+            System.err.format("Au moins un des fichiers d'entré est inaccessible : %1$s, %2$s%n", referenceFile, examinedFile);
             return false;
         }
         
